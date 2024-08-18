@@ -64,8 +64,6 @@ func BaseProvider(obj Providerer) *Provider {
 	return obj.baseProvider()
 }
 
-// The function returns the following values:
-//
 func (self *Provider) DefaultCode() string {
 	var _arg0 *C.SpellingProvider // out
 	var _cret *C.char             // in
@@ -82,8 +80,6 @@ func (self *Provider) DefaultCode() string {
 	return _utf8
 }
 
-// The function returns the following values:
-//
 func (self *Provider) DisplayName() string {
 	var _arg0 *C.SpellingProvider // out
 	var _cret *C.char             // in
@@ -110,7 +106,6 @@ func (self *Provider) DisplayName() string {
 // The function returns the following values:
 //
 //   - ret (optional) or NULL.
-//
 func (self *Provider) Language(language string) Languager {
 	var _arg0 *C.SpellingProvider // out
 	var _arg1 *C.char             // out
@@ -155,7 +150,6 @@ func (self *Provider) Language(language string) Languager {
 // The function returns the following values:
 //
 //   - ok: TRUE if language is supported, otherwise FALSE.
-//
 func (self *Provider) SupportsLanguage(language string) bool {
 	var _arg0 *C.SpellingProvider // out
 	var _arg1 *C.char             // out
@@ -183,7 +177,6 @@ func (self *Provider) SupportsLanguage(language string) bool {
 // The function returns the following values:
 //
 //   - provider: Provider.
-//
 func ProviderGetDefault() Providerer {
 	var _cret *C.SpellingProvider // in
 

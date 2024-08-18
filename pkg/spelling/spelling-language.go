@@ -64,8 +64,6 @@ func BaseLanguage(obj Languager) *Language {
 	return obj.baseLanguage()
 }
 
-// The function takes the following parameters:
-//
 func (self *Language) AddWord(word string) {
 	var _arg0 *C.SpellingLanguage // out
 	var _arg1 *C.char             // out
@@ -79,28 +77,21 @@ func (self *Language) AddWord(word string) {
 	runtime.KeepAlive(word)
 }
 
-// The function takes the following parameters:
-//
-//   - word
-//   - wordLen
-//
-// The function returns the following values:
-//
-func (self *Language) ContainsWord(word string, wordLen int) bool {
+func (self *Language) ContainsWord(word string) bool {
 	var _arg0 *C.SpellingLanguage // out
 	var _arg1 *C.char             // out
-	var _arg2 C.gssize            // out
-	var _cret C.gboolean          // in
+	var _arg2 C.gssize
+	var _cret C.gboolean // in
 
 	_arg0 = (*C.SpellingLanguage)(unsafe.Pointer(coreglib.InternObject(self).Native()))
-	_arg1 = (*C.char)(unsafe.Pointer(C.CString(word)))
+	_arg2 = (C.gssize)(len(word))
+	_arg1 = (*C.char)(C.calloc(C.size_t((len(word) + 1)), C.size_t(C.sizeof_char)))
+	copy(unsafe.Slice((*byte)(unsafe.Pointer(_arg1)), len(word)), word)
 	defer C.free(unsafe.Pointer(_arg1))
-	_arg2 = C.gssize(wordLen)
 
 	_cret = C.spelling_language_contains_word(_arg0, _arg1, _arg2)
 	runtime.KeepAlive(self)
 	runtime.KeepAlive(word)
-	runtime.KeepAlive(wordLen)
 
 	var _ok bool // out
 
@@ -111,8 +102,6 @@ func (self *Language) ContainsWord(word string, wordLen int) bool {
 	return _ok
 }
 
-// The function returns the following values:
-//
 func (self *Language) Code() string {
 	var _arg0 *C.SpellingLanguage // out
 	var _cret *C.char             // in
@@ -129,8 +118,6 @@ func (self *Language) Code() string {
 	return _utf8
 }
 
-// The function returns the following values:
-//
 func (self *Language) ExtraWordChars() string {
 	var _arg0 *C.SpellingLanguage // out
 	var _cret *C.char             // in
@@ -147,8 +134,6 @@ func (self *Language) ExtraWordChars() string {
 	return _utf8
 }
 
-// The function takes the following parameters:
-//
 func (self *Language) IgnoreWord(word string) {
 	var _arg0 *C.SpellingLanguage // out
 	var _arg1 *C.char             // out
@@ -167,27 +152,25 @@ func (self *Language) IgnoreWord(word string) {
 // The function takes the following parameters:
 //
 //   - word to be checked.
-//   - wordLen: length of word, or -1 if word is zero-terminated.
 //
 // The function returns the following values:
 //
 //   - utf8s (optional): A list of possible corrections, or NULL.
-//
-func (self *Language) ListCorrections(word string, wordLen int) []string {
+func (self *Language) ListCorrections(word string) []string {
 	var _arg0 *C.SpellingLanguage // out
 	var _arg1 *C.char             // out
-	var _arg2 C.gssize            // out
-	var _cret **C.char            // in
+	var _arg2 C.gssize
+	var _cret **C.char // in
 
 	_arg0 = (*C.SpellingLanguage)(unsafe.Pointer(coreglib.InternObject(self).Native()))
-	_arg1 = (*C.char)(unsafe.Pointer(C.CString(word)))
+	_arg2 = (C.gssize)(len(word))
+	_arg1 = (*C.char)(C.calloc(C.size_t((len(word) + 1)), C.size_t(C.sizeof_char)))
+	copy(unsafe.Slice((*byte)(unsafe.Pointer(_arg1)), len(word)), word)
 	defer C.free(unsafe.Pointer(_arg1))
-	_arg2 = C.gssize(wordLen)
 
 	_cret = C.spelling_language_list_corrections(_arg0, _arg1, _arg2)
 	runtime.KeepAlive(self)
 	runtime.KeepAlive(word)
-	runtime.KeepAlive(wordLen)
 
 	var _utf8s []string // out
 

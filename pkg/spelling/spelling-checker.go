@@ -79,7 +79,6 @@ func marshalChecker(p uintptr) (interface{}, error) {
 // The function returns the following values:
 //
 //   - checker: newly created Checker.
-//
 func NewChecker(provider Providerer, language string) *Checker {
 	var _arg1 *C.SpellingProvider // out
 	var _arg2 *C.char             // out
@@ -100,8 +99,6 @@ func NewChecker(provider Providerer, language string) *Checker {
 	return _checker
 }
 
-// The function takes the following parameters:
-//
 func (self *Checker) AddWord(word string) {
 	var _arg0 *C.SpellingChecker // out
 	var _arg1 *C.char            // out
@@ -115,28 +112,21 @@ func (self *Checker) AddWord(word string) {
 	runtime.KeepAlive(word)
 }
 
-// The function takes the following parameters:
-//
-//   - word
-//   - wordLen
-//
-// The function returns the following values:
-//
-func (self *Checker) CheckWord(word string, wordLen int) bool {
+func (self *Checker) CheckWord(word string) bool {
 	var _arg0 *C.SpellingChecker // out
 	var _arg1 *C.char            // out
-	var _arg2 C.gssize           // out
-	var _cret C.gboolean         // in
+	var _arg2 C.gssize
+	var _cret C.gboolean // in
 
 	_arg0 = (*C.SpellingChecker)(unsafe.Pointer(coreglib.InternObject(self).Native()))
-	_arg1 = (*C.char)(unsafe.Pointer(C.CString(word)))
+	_arg2 = (C.gssize)(len(word))
+	_arg1 = (*C.char)(C.calloc(C.size_t((len(word) + 1)), C.size_t(C.sizeof_char)))
+	copy(unsafe.Slice((*byte)(unsafe.Pointer(_arg1)), len(word)), word)
 	defer C.free(unsafe.Pointer(_arg1))
-	_arg2 = C.gssize(wordLen)
 
 	_cret = C.spelling_checker_check_word(_arg0, _arg1, _arg2)
 	runtime.KeepAlive(self)
 	runtime.KeepAlive(word)
-	runtime.KeepAlive(wordLen)
 
 	var _ok bool // out
 
@@ -147,8 +137,6 @@ func (self *Checker) CheckWord(word string, wordLen int) bool {
 	return _ok
 }
 
-// The function returns the following values:
-//
 func (self *Checker) ExtraWordChars() string {
 	var _arg0 *C.SpellingChecker // out
 	var _cret *C.char            // in
@@ -170,7 +158,6 @@ func (self *Checker) ExtraWordChars() string {
 // The function returns the following values:
 //
 //   - utf8 (optional): string describing the current language.
-//
 func (self *Checker) Language() string {
 	var _arg0 *C.SpellingChecker // out
 	var _cret *C.char            // in
@@ -196,7 +183,6 @@ func (self *Checker) Language() string {
 // The function returns the following values:
 //
 //   - provider: Provider.
-//
 func (self *Checker) Provider() Providerer {
 	var _arg0 *C.SpellingChecker  // out
 	var _cret *C.SpellingProvider // in
@@ -229,8 +215,6 @@ func (self *Checker) Provider() Providerer {
 	return _provider
 }
 
-// The function takes the following parameters:
-//
 func (self *Checker) IgnoreWord(word string) {
 	var _arg0 *C.SpellingChecker // out
 	var _arg1 *C.char            // out
@@ -253,7 +237,6 @@ func (self *Checker) IgnoreWord(word string) {
 // The function returns the following values:
 //
 //   - utf8s (optional): A list of possible corrections, or NULL.
-//
 func (self *Checker) ListCorrections(word string) []string {
 	var _arg0 *C.SpellingChecker // out
 	var _arg1 *C.char            // out
@@ -296,7 +279,6 @@ func (self *Checker) ListCorrections(word string) []string {
 // The function takes the following parameters:
 //
 //   - language to use.
-//
 func (self *Checker) SetLanguage(language string) {
 	var _arg0 *C.SpellingChecker // out
 	var _arg1 *C.char            // out
@@ -316,7 +298,6 @@ func (self *Checker) SetLanguage(language string) {
 // The function returns the following values:
 //
 //   - checker: Checker.
-//
 func CheckerGetDefault() *Checker {
 	var _cret *C.SpellingChecker // in
 

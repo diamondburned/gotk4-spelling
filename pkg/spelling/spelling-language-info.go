@@ -69,8 +69,6 @@ func marshalLanguageInfo(p uintptr) (interface{}, error) {
 	return wrapLanguageInfo(coreglib.ValueFromNative(unsafe.Pointer(p)).Object()), nil
 }
 
-// The function returns the following values:
-//
 func (self *LanguageInfo) Code() string {
 	var _arg0 *C.SpellingLanguageInfo // out
 	var _cret *C.char                 // in
@@ -87,8 +85,6 @@ func (self *LanguageInfo) Code() string {
 	return _utf8
 }
 
-// The function returns the following values:
-//
 func (self *LanguageInfo) Group() string {
 	var _arg0 *C.SpellingLanguageInfo // out
 	var _cret *C.char                 // in
@@ -105,8 +101,6 @@ func (self *LanguageInfo) Group() string {
 	return _utf8
 }
 
-// The function returns the following values:
-//
 func (self *LanguageInfo) Name() string {
 	var _arg0 *C.SpellingLanguageInfo // out
 	var _cret *C.char                 // in

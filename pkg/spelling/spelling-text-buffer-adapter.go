@@ -6,11 +6,11 @@ import (
 	"runtime"
 	"unsafe"
 
-	"github.com/diamondburned/gotk4-sourceview/pkg/gtksource/v5"
 	"github.com/diamondburned/gotk4/pkg/core/gextras"
 	coreglib "github.com/diamondburned/gotk4/pkg/core/glib"
 	"github.com/diamondburned/gotk4/pkg/gio/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
+	"libdb.so/gotk4-sourceview/pkg/gtksource/v5"
 )
 
 // #include <stdlib.h>
@@ -81,9 +81,6 @@ func marshalTextBufferAdapter(p uintptr) (interface{}, error) {
 //
 //   - buffer
 //   - checker
-//
-// The function returns the following values:
-//
 func NewTextBufferAdapter(buffer *gtksource.Buffer, checker *Checker) *TextBufferAdapter {
 	var _arg1 *C.GtkSourceBuffer           // out
 	var _arg2 *C.SpellingChecker           // out
@@ -108,7 +105,6 @@ func NewTextBufferAdapter(buffer *gtksource.Buffer, checker *Checker) *TextBuffe
 // The function returns the following values:
 //
 //   - buffer (optional): SourceBuffer.
-//
 func (self *TextBufferAdapter) Buffer() *gtksource.Buffer {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _cret *C.GtkSourceBuffer           // in
@@ -139,7 +135,6 @@ func (self *TextBufferAdapter) Buffer() *gtksource.Buffer {
 // The function returns the following values:
 //
 //   - checker (optional) or NULL.
-//
 func (self *TextBufferAdapter) Checker() *Checker {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _cret *C.SpellingChecker           // in
@@ -158,8 +153,6 @@ func (self *TextBufferAdapter) Checker() *Checker {
 	return _checker
 }
 
-// The function returns the following values:
-//
 func (self *TextBufferAdapter) Enabled() bool {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _cret C.gboolean                   // in
@@ -178,8 +171,6 @@ func (self *TextBufferAdapter) Enabled() bool {
 	return _ok
 }
 
-// The function returns the following values:
-//
 func (self *TextBufferAdapter) Language() string {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _cret *C.char                      // in
@@ -201,7 +192,6 @@ func (self *TextBufferAdapter) Language() string {
 // The function returns the following values:
 //
 //   - menuModel: Model.
-//
 func (self *TextBufferAdapter) MenuModel() gio.MenuModeller {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _cret *C.GMenuModel                // in
@@ -239,7 +229,6 @@ func (self *TextBufferAdapter) MenuModel() gio.MenuModeller {
 // The function returns the following values:
 //
 //   - textTag (optional) or NULL.
-//
 func (self *TextBufferAdapter) Tag() *gtk.TextTag {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _cret *C.GtkTextTag                // in
@@ -272,8 +261,6 @@ func (self *TextBufferAdapter) InvalidateAll() {
 	runtime.KeepAlive(self)
 }
 
-// The function takes the following parameters:
-//
 func (self *TextBufferAdapter) SetChecker(checker *Checker) {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _arg1 *C.SpellingChecker           // out
@@ -286,8 +273,6 @@ func (self *TextBufferAdapter) SetChecker(checker *Checker) {
 	runtime.KeepAlive(checker)
 }
 
-// The function takes the following parameters:
-//
 func (self *TextBufferAdapter) SetEnabled(enabled bool) {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _arg1 C.gboolean                   // out
@@ -302,8 +287,6 @@ func (self *TextBufferAdapter) SetEnabled(enabled bool) {
 	runtime.KeepAlive(enabled)
 }
 
-// The function takes the following parameters:
-//
 func (self *TextBufferAdapter) SetLanguage(language string) {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _arg1 *C.char                      // out

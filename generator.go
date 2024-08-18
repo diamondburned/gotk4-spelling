@@ -5,11 +5,11 @@ package main
 import (
 	"runtime/debug"
 
-	"github.com/diamondburned/gotk4-sourceview/gensourceview"
 	"github.com/diamondburned/gotk4/gir/cmd/gir-generate/gendata"
 	"github.com/diamondburned/gotk4/gir/cmd/gir-generate/genmain"
 	"github.com/diamondburned/gotk4/gir/girgen"
 	"github.com/diamondburned/gotk4/gir/girgen/types"
+	"libdb.so/gotk4-sourceview/gensourceview"
 )
 
 var gomodModule = func() string {
