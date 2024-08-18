@@ -1,6 +1,6 @@
 module libdb.so/gotk4-spelling/pkg
 
-go 1.21.6
+go 1.21.0
 
 require (
 	github.com/diamondburned/gotk4-sourceview/pkg v0.0.0-20240312005410-8276faa7949c
