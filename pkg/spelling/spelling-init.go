@@ -6,6 +6,8 @@ package spelling
 // #include <libspelling.h>
 import "C"
 
+// Init: call this function before using any other libspelling functions in your
+// applications. It will initialize everything needed to operate the library.
 func Init() {
 	C.spelling_init()
 }

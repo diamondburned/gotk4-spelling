@@ -37,6 +37,8 @@ func defaultTextBufferAdapterOverrides(v *TextBufferAdapter) TextBufferAdapterOv
 	return TextBufferAdapterOverrides{}
 }
 
+// TextBufferAdapter: SpellingTextBufferAdapter implements helpers to easily add
+// spellchecking capabilities to a GtkSourceBuffer.
 type TextBufferAdapter struct {
 	_ [0]func() // equal guard
 	*coreglib.Object
@@ -77,10 +79,16 @@ func marshalTextBufferAdapter(p uintptr) (interface{}, error) {
 	return wrapTextBufferAdapter(coreglib.ValueFromNative(unsafe.Pointer(p)).Object()), nil
 }
 
+// NewTextBufferAdapter: create a new SpellingTextBufferAdapter.
+//
 // The function takes the following parameters:
 //
-//   - buffer
-//   - checker
+//   - buffer: GtkSourceBuffer.
+//   - checker: SpellingChecker.
+//
+// The function returns the following values:
+//
+//   - textBufferAdapter: newly created SpellingTextBufferAdapter.
 func NewTextBufferAdapter(buffer *gtksource.Buffer, checker *Checker) *TextBufferAdapter {
 	var _arg1 *C.GtkSourceBuffer           // out
 	var _arg2 *C.SpellingChecker           // out
@@ -104,7 +112,7 @@ func NewTextBufferAdapter(buffer *gtksource.Buffer, checker *Checker) *TextBuffe
 //
 // The function returns the following values:
 //
-//   - buffer (optional): SourceBuffer.
+//   - buffer (optional): GtkSourceBuffer.
 func (self *TextBufferAdapter) Buffer() *gtksource.Buffer {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _cret *C.GtkSourceBuffer           // in
@@ -134,7 +142,7 @@ func (self *TextBufferAdapter) Buffer() *gtksource.Buffer {
 //
 // The function returns the following values:
 //
-//   - checker (optional) or NULL.
+//   - checker (optional): SpellingChecker or NULL.
 func (self *TextBufferAdapter) Checker() *Checker {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _cret *C.SpellingChecker           // in
@@ -153,6 +161,11 @@ func (self *TextBufferAdapter) Checker() *Checker {
 	return _checker
 }
 
+// Enabled gets if the spellcheck is enabled.
+//
+// The function returns the following values:
+//
+//   - ok: TRUE if enabled.
 func (self *TextBufferAdapter) Enabled() bool {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _cret C.gboolean                   // in
@@ -171,6 +184,11 @@ func (self *TextBufferAdapter) Enabled() bool {
 	return _ok
 }
 
+// Language gets the checker language.
+//
+// The function returns the following values:
+//
+//   - utf8 (optional): language code.
 func (self *TextBufferAdapter) Language() string {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _cret *C.char                      // in
@@ -182,7 +200,9 @@ func (self *TextBufferAdapter) Language() string {
 
 	var _utf8 string // out
 
-	_utf8 = C.GoString((*C.gchar)(unsafe.Pointer(_cret)))
+	if _cret != nil {
+		_utf8 = C.GoString((*C.gchar)(unsafe.Pointer(_cret)))
+	}
 
 	return _utf8
 }
@@ -191,7 +211,7 @@ func (self *TextBufferAdapter) Language() string {
 //
 // The function returns the following values:
 //
-//   - menuModel: Model.
+//   - menuModel: GMenuModel.
 func (self *TextBufferAdapter) MenuModel() gio.MenuModeller {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _cret *C.GMenuModel                // in
@@ -228,7 +248,7 @@ func (self *TextBufferAdapter) MenuModel() gio.MenuModeller {
 //
 // The function returns the following values:
 //
-//   - textTag (optional) or NULL.
+//   - textTag (optional): GtkTextTag or NULL.
 func (self *TextBufferAdapter) Tag() *gtk.TextTag {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _cret *C.GtkTextTag                // in
@@ -252,6 +272,9 @@ func (self *TextBufferAdapter) Tag() *gtk.TextTag {
 	return _textTag
 }
 
+// InvalidateAll: invalidate the spelling engine, to force parsing again.
+//
+// Invalidation is automatically done on gtksource.Buffer:loading change.
 func (self *TextBufferAdapter) InvalidateAll() {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 
@@ -261,6 +284,11 @@ func (self *TextBufferAdapter) InvalidateAll() {
 	runtime.KeepAlive(self)
 }
 
+// SetChecker: set the spelling.Checker used for spellchecking.
+//
+// The function takes the following parameters:
+//
+//   - checker: SpellingChecker.
 func (self *TextBufferAdapter) SetChecker(checker *Checker) {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _arg1 *C.SpellingChecker           // out
@@ -273,6 +301,11 @@ func (self *TextBufferAdapter) SetChecker(checker *Checker) {
 	runtime.KeepAlive(checker)
 }
 
+// SetEnabled: if TRUE spellcheck is enabled.
+//
+// The function takes the following parameters:
+//
+//   - enabled: whether the spellcheck is enabled.
 func (self *TextBufferAdapter) SetEnabled(enabled bool) {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _arg1 C.gboolean                   // out
@@ -287,6 +320,11 @@ func (self *TextBufferAdapter) SetEnabled(enabled bool) {
 	runtime.KeepAlive(enabled)
 }
 
+// SetLanguage sets the language code to use by the checker, such as en_US.
+//
+// The function takes the following parameters:
+//
+//   - language to use.
 func (self *TextBufferAdapter) SetLanguage(language string) {
 	var _arg0 *C.SpellingTextBufferAdapter // out
 	var _arg1 *C.char                      // out
@@ -298,6 +336,20 @@ func (self *TextBufferAdapter) SetLanguage(language string) {
 	C.spelling_text_buffer_adapter_set_language(_arg0, _arg1)
 	runtime.KeepAlive(self)
 	runtime.KeepAlive(language)
+}
+
+// UpdateCorrections looks at the current cursor position and updates the list
+// of corrections based on the current word.
+//
+// Use this to force an update immediately rather than after the automatic
+// timeout caused by cursor movements.
+func (self *TextBufferAdapter) UpdateCorrections() {
+	var _arg0 *C.SpellingTextBufferAdapter // out
+
+	_arg0 = (*C.SpellingTextBufferAdapter)(unsafe.Pointer(coreglib.InternObject(self).Native()))
+
+	C.spelling_text_buffer_adapter_update_corrections(_arg0)
+	runtime.KeepAlive(self)
 }
 
 // TextBufferAdapterClass: instance of this type is always passed by reference.

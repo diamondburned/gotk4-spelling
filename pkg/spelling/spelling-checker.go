@@ -34,6 +34,8 @@ func defaultCheckerOverrides(v *Checker) CheckerOverrides {
 	return CheckerOverrides{}
 }
 
+// Checker: SpellingChecker is the core class of libspelling. It provides
+// high-level APIs for spellchecking.
 type Checker struct {
 	_ [0]func() // equal guard
 	*coreglib.Object
@@ -69,7 +71,7 @@ func marshalChecker(p uintptr) (interface{}, error) {
 	return wrapChecker(coreglib.ValueFromNative(unsafe.Pointer(p)).Object()), nil
 }
 
-// NewChecker: create a new Checker.
+// NewChecker: create a new SpellingChecker.
 //
 // The function takes the following parameters:
 //
@@ -78,7 +80,7 @@ func marshalChecker(p uintptr) (interface{}, error) {
 //
 // The function returns the following values:
 //
-//   - checker: newly created Checker.
+//   - checker: newly created SpellingChecker.
 func NewChecker(provider Providerer, language string) *Checker {
 	var _arg1 *C.SpellingProvider // out
 	var _arg2 *C.char             // out
@@ -99,6 +101,11 @@ func NewChecker(provider Providerer, language string) *Checker {
 	return _checker
 }
 
+// AddWord adds word to the active dictionary.
+//
+// The function takes the following parameters:
+//
+//   - word to be added.
 func (self *Checker) AddWord(word string) {
 	var _arg0 *C.SpellingChecker // out
 	var _arg1 *C.char            // out
@@ -112,6 +119,15 @@ func (self *Checker) AddWord(word string) {
 	runtime.KeepAlive(word)
 }
 
+// CheckWord checks if the active dictionary contains word.
+//
+// The function takes the following parameters:
+//
+//   - word to be checked.
+//
+// The function returns the following values:
+//
+//   - ok: TRUE if the dictionary contains the word.
 func (self *Checker) CheckWord(word string) bool {
 	var _arg0 *C.SpellingChecker // out
 	var _arg1 *C.char            // out
@@ -137,6 +153,11 @@ func (self *Checker) CheckWord(word string) bool {
 	return _ok
 }
 
+// ExtraWordChars gets the extra word characters of the active dictionary.
+//
+// The function returns the following values:
+//
+//   - utf8: extra word characters.
 func (self *Checker) ExtraWordChars() string {
 	var _arg0 *C.SpellingChecker // out
 	var _cret *C.char            // in
@@ -182,7 +203,7 @@ func (self *Checker) Language() string {
 //
 // The function returns the following values:
 //
-//   - provider: Provider.
+//   - provider: SpellingProvider.
 func (self *Checker) Provider() Providerer {
 	var _arg0 *C.SpellingChecker  // out
 	var _cret *C.SpellingProvider // in
@@ -215,6 +236,11 @@ func (self *Checker) Provider() Providerer {
 	return _provider
 }
 
+// IgnoreWord requests the active dictionary to ignore word.
+//
+// The function takes the following parameters:
+//
+//   - word to be ignored.
 func (self *Checker) IgnoreWord(word string) {
 	var _arg0 *C.SpellingChecker // out
 	var _arg1 *C.char            // out
@@ -292,12 +318,12 @@ func (self *Checker) SetLanguage(language string) {
 	runtime.KeepAlive(language)
 }
 
-// CheckerGetDefault gets a default Checker using the default provider and
-// language.
+// CheckerGetDefault gets a default SpellingChecker using the default provider
+// and language.
 //
 // The function returns the following values:
 //
-//   - checker: Checker.
+//   - checker: SpellingChecker.
 func CheckerGetDefault() *Checker {
 	var _cret *C.SpellingChecker // in
 

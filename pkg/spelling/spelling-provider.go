@@ -7,6 +7,7 @@ import (
 	"unsafe"
 
 	coreglib "github.com/diamondburned/gotk4/pkg/core/glib"
+	"github.com/diamondburned/gotk4/pkg/gio/v2"
 )
 
 // #include <stdlib.h>
@@ -25,6 +26,7 @@ func init() {
 	})
 }
 
+// Provider: abstract base class for spellchecking providers.
 type Provider struct {
 	_ [0]func() // equal guard
 	*coreglib.Object
@@ -64,6 +66,12 @@ func BaseProvider(obj Providerer) *Provider {
 	return obj.baseProvider()
 }
 
+// DefaultCode gets the default language code for the detected system locales,
+// or NULL if the provider doesn't support any of them.
+//
+// The function returns the following values:
+//
+//   - utf8 (optional): default language code.
 func (self *Provider) DefaultCode() string {
 	var _arg0 *C.SpellingProvider // out
 	var _cret *C.char             // in
@@ -75,11 +83,18 @@ func (self *Provider) DefaultCode() string {
 
 	var _utf8 string // out
 
-	_utf8 = C.GoString((*C.gchar)(unsafe.Pointer(_cret)))
+	if _cret != nil {
+		_utf8 = C.GoString((*C.gchar)(unsafe.Pointer(_cret)))
+	}
 
 	return _utf8
 }
 
+// DisplayName gets the display name of the provider, or NULL if undefined.
+//
+// The function returns the following values:
+//
+//   - utf8 (optional): display name of the provider.
 func (self *Provider) DisplayName() string {
 	var _arg0 *C.SpellingProvider // out
 	var _cret *C.char             // in
@@ -91,13 +106,41 @@ func (self *Provider) DisplayName() string {
 
 	var _utf8 string // out
 
-	_utf8 = C.GoString((*C.gchar)(unsafe.Pointer(_cret)))
+	if _cret != nil {
+		_utf8 = C.GoString((*C.gchar)(unsafe.Pointer(_cret)))
+	}
 
 	return _utf8
 }
 
-// Language gets an Language for the requested language, or NULL if the language
-// is not supported.
+// ListLanguages gets a GListModel of languages supported by the provider.
+//
+// The function returns the following values:
+//
+//   - listModel: GListModel of SpellingLanguage.
+func (self *Provider) ListLanguages() *gio.ListModel {
+	var _arg0 *C.SpellingProvider // out
+	var _cret *C.GListModel       // in
+
+	_arg0 = (*C.SpellingProvider)(unsafe.Pointer(coreglib.InternObject(self).Native()))
+
+	_cret = C.spelling_provider_list_languages(_arg0)
+	runtime.KeepAlive(self)
+
+	var _listModel *gio.ListModel // out
+
+	{
+		obj := coreglib.AssumeOwnership(unsafe.Pointer(_cret))
+		_listModel = &gio.ListModel{
+			Object: obj,
+		}
+	}
+
+	return _listModel
+}
+
+// LoadDictionary gets a SpellingDictionary for the requested language, or NULL
+// if the language is not supported.
 //
 // The function takes the following parameters:
 //
@@ -105,21 +148,21 @@ func (self *Provider) DisplayName() string {
 //
 // The function returns the following values:
 //
-//   - ret (optional) or NULL.
-func (self *Provider) Language(language string) Languager {
-	var _arg0 *C.SpellingProvider // out
-	var _arg1 *C.char             // out
-	var _cret *C.SpellingLanguage // in
+//   - dictionary (optional): SpellingDictionary or NULL.
+func (self *Provider) LoadDictionary(language string) Dictionarier {
+	var _arg0 *C.SpellingProvider   // out
+	var _arg1 *C.char               // out
+	var _cret *C.SpellingDictionary // in
 
 	_arg0 = (*C.SpellingProvider)(unsafe.Pointer(coreglib.InternObject(self).Native()))
 	_arg1 = (*C.char)(unsafe.Pointer(C.CString(language)))
 	defer C.free(unsafe.Pointer(_arg1))
 
-	_cret = C.spelling_provider_get_language(_arg0, _arg1)
+	_cret = C.spelling_provider_load_dictionary(_arg0, _arg1)
 	runtime.KeepAlive(self)
 	runtime.KeepAlive(language)
 
-	var _ret Languager // out
+	var _dictionary Dictionarier // out
 
 	if _cret != nil {
 		{
@@ -127,18 +170,18 @@ func (self *Provider) Language(language string) Languager {
 
 			object := coreglib.AssumeOwnership(objptr)
 			casted := object.WalkCast(func(obj coreglib.Objector) bool {
-				_, ok := obj.(Languager)
+				_, ok := obj.(Dictionarier)
 				return ok
 			})
-			rv, ok := casted.(Languager)
+			rv, ok := casted.(Dictionarier)
 			if !ok {
-				panic("no marshaler for " + object.TypeFromInstance().String() + " matching spelling.Languager")
+				panic("no marshaler for " + object.TypeFromInstance().String() + " matching spelling.Dictionarier")
 			}
-			_ret = rv
+			_dictionary = rv
 		}
 	}
 
-	return _ret
+	return _dictionary
 }
 
 // SupportsLanguage checks of language is supported by the provider.
@@ -176,7 +219,7 @@ func (self *Provider) SupportsLanguage(language string) bool {
 //
 // The function returns the following values:
 //
-//   - provider: Provider.
+//   - provider: SpellingProvider.
 func ProviderGetDefault() Providerer {
 	var _cret *C.SpellingProvider // in
 

@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"unsafe"
 
+	"github.com/diamondburned/gotk4/pkg/core/gextras"
 	coreglib "github.com/diamondburned/gotk4/pkg/core/glib"
 )
 
@@ -25,6 +26,15 @@ func init() {
 	})
 }
 
+// LanguageOverrides contains methods that are overridable.
+type LanguageOverrides struct {
+}
+
+func defaultLanguageOverrides(v *Language) LanguageOverrides {
+	return LanguageOverrides{}
+}
+
+// Language represents a spellchecking language.
 type Language struct {
 	_ [0]func() // equal guard
 	*coreglib.Object
@@ -34,16 +44,21 @@ var (
 	_ coreglib.Objector = (*Language)(nil)
 )
 
-// Languager describes types inherited from class Language.
-//
-// To get the original type, the caller must assert this to an interface or
-// another type.
-type Languager interface {
-	coreglib.Objector
-	baseLanguage() *Language
+func init() {
+	coreglib.RegisterClassInfo[*Language, *LanguageClass, LanguageOverrides](
+		GTypeLanguage,
+		initLanguageClass,
+		wrapLanguage,
+		defaultLanguageOverrides,
+	)
 }
 
-var _ Languager = (*Language)(nil)
+func initLanguageClass(gclass unsafe.Pointer, overrides LanguageOverrides, classInitFunc func(*LanguageClass)) {
+	if classInitFunc != nil {
+		class := (*LanguageClass)(gextras.NewStructNative(gclass))
+		classInitFunc(class)
+	}
+}
 
 func wrapLanguage(obj *coreglib.Object) *Language {
 	return &Language{
@@ -55,53 +70,11 @@ func marshalLanguage(p uintptr) (interface{}, error) {
 	return wrapLanguage(coreglib.ValueFromNative(unsafe.Pointer(p)).Object()), nil
 }
 
-func (self *Language) baseLanguage() *Language {
-	return self
-}
-
-// BaseLanguage returns the underlying base object.
-func BaseLanguage(obj Languager) *Language {
-	return obj.baseLanguage()
-}
-
-func (self *Language) AddWord(word string) {
-	var _arg0 *C.SpellingLanguage // out
-	var _arg1 *C.char             // out
-
-	_arg0 = (*C.SpellingLanguage)(unsafe.Pointer(coreglib.InternObject(self).Native()))
-	_arg1 = (*C.char)(unsafe.Pointer(C.CString(word)))
-	defer C.free(unsafe.Pointer(_arg1))
-
-	C.spelling_language_add_word(_arg0, _arg1)
-	runtime.KeepAlive(self)
-	runtime.KeepAlive(word)
-}
-
-func (self *Language) ContainsWord(word string) bool {
-	var _arg0 *C.SpellingLanguage // out
-	var _arg1 *C.char             // out
-	var _arg2 C.gssize
-	var _cret C.gboolean // in
-
-	_arg0 = (*C.SpellingLanguage)(unsafe.Pointer(coreglib.InternObject(self).Native()))
-	_arg2 = (C.gssize)(len(word))
-	_arg1 = (*C.char)(C.calloc(C.size_t((len(word) + 1)), C.size_t(C.sizeof_char)))
-	copy(unsafe.Slice((*byte)(unsafe.Pointer(_arg1)), len(word)), word)
-	defer C.free(unsafe.Pointer(_arg1))
-
-	_cret = C.spelling_language_contains_word(_arg0, _arg1, _arg2)
-	runtime.KeepAlive(self)
-	runtime.KeepAlive(word)
-
-	var _ok bool // out
-
-	if _cret != 0 {
-		_ok = true
-	}
-
-	return _ok
-}
-
+// Code gets the code of the language, or NULL if undefined.
+//
+// The function returns the following values:
+//
+//   - utf8 (optional): code of the language.
 func (self *Language) Code() string {
 	var _arg0 *C.SpellingLanguage // out
 	var _cret *C.char             // in
@@ -113,84 +86,65 @@ func (self *Language) Code() string {
 
 	var _utf8 string // out
 
-	_utf8 = C.GoString((*C.gchar)(unsafe.Pointer(_cret)))
+	if _cret != nil {
+		_utf8 = C.GoString((*C.gchar)(unsafe.Pointer(_cret)))
+	}
 
 	return _utf8
 }
 
-func (self *Language) ExtraWordChars() string {
+// Group gets the group of the language, or NULL if undefined.
+//
+// The function returns the following values:
+//
+//   - utf8 (optional): group of the language.
+func (self *Language) Group() string {
 	var _arg0 *C.SpellingLanguage // out
 	var _cret *C.char             // in
 
 	_arg0 = (*C.SpellingLanguage)(unsafe.Pointer(coreglib.InternObject(self).Native()))
 
-	_cret = C.spelling_language_get_extra_word_chars(_arg0)
+	_cret = C.spelling_language_get_group(_arg0)
 	runtime.KeepAlive(self)
 
 	var _utf8 string // out
 
-	_utf8 = C.GoString((*C.gchar)(unsafe.Pointer(_cret)))
+	if _cret != nil {
+		_utf8 = C.GoString((*C.gchar)(unsafe.Pointer(_cret)))
+	}
 
 	return _utf8
 }
 
-func (self *Language) IgnoreWord(word string) {
-	var _arg0 *C.SpellingLanguage // out
-	var _arg1 *C.char             // out
-
-	_arg0 = (*C.SpellingLanguage)(unsafe.Pointer(coreglib.InternObject(self).Native()))
-	_arg1 = (*C.char)(unsafe.Pointer(C.CString(word)))
-	defer C.free(unsafe.Pointer(_arg1))
-
-	C.spelling_language_ignore_word(_arg0, _arg1)
-	runtime.KeepAlive(self)
-	runtime.KeepAlive(word)
-}
-
-// ListCorrections retrieves a list of possible corrections for word.
-//
-// The function takes the following parameters:
-//
-//   - word to be checked.
+// Name gets the name of the language, or NULL if undefined.
 //
 // The function returns the following values:
 //
-//   - utf8s (optional): A list of possible corrections, or NULL.
-func (self *Language) ListCorrections(word string) []string {
+//   - utf8 (optional): name of the language.
+func (self *Language) Name() string {
 	var _arg0 *C.SpellingLanguage // out
-	var _arg1 *C.char             // out
-	var _arg2 C.gssize
-	var _cret **C.char // in
+	var _cret *C.char             // in
 
 	_arg0 = (*C.SpellingLanguage)(unsafe.Pointer(coreglib.InternObject(self).Native()))
-	_arg2 = (C.gssize)(len(word))
-	_arg1 = (*C.char)(C.calloc(C.size_t((len(word) + 1)), C.size_t(C.sizeof_char)))
-	copy(unsafe.Slice((*byte)(unsafe.Pointer(_arg1)), len(word)), word)
-	defer C.free(unsafe.Pointer(_arg1))
 
-	_cret = C.spelling_language_list_corrections(_arg0, _arg1, _arg2)
+	_cret = C.spelling_language_get_name(_arg0)
 	runtime.KeepAlive(self)
-	runtime.KeepAlive(word)
 
-	var _utf8s []string // out
+	var _utf8 string // out
 
 	if _cret != nil {
-		defer C.free(unsafe.Pointer(_cret))
-		{
-			var i int
-			var z *C.char
-			for p := _cret; *p != z; p = &unsafe.Slice(p, 2)[1] {
-				i++
-			}
-
-			src := unsafe.Slice(_cret, i)
-			_utf8s = make([]string, i)
-			for i := range src {
-				_utf8s[i] = C.GoString((*C.gchar)(unsafe.Pointer(src[i])))
-				defer C.free(unsafe.Pointer(src[i]))
-			}
-		}
+		_utf8 = C.GoString((*C.gchar)(unsafe.Pointer(_cret)))
 	}
 
-	return _utf8s
+	return _utf8
+}
+
+// LanguageClass: instance of this type is always passed by reference.
+type LanguageClass struct {
+	*languageClass
+}
+
+// languageClass is the struct that's finalized.
+type languageClass struct {
+	native *C.SpellingLanguageClass
 }
